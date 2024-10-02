@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import * as Three from "three";
 import Config from "./config/config";
+import { Row, Col } from "react-bootstrap";
 
 class RobotState extends Component {
   //   constructor() {}
@@ -96,11 +97,17 @@ class RobotState extends Component {
       <div>
         <p>{this.state.info_msg}</p>
         <h6>Odometry</h6>
-        <p>x: {this.state.x}</p>
-        <p>y: {this.state.y}</p>
-        <p>yaw: {this.state.yaw}</p>
-        <p>linear velocity: {this.state.linear_vel}</p>
-        <p>angular velocity: {this.state.angular_vel}</p>
+        <Row>
+          <Col>
+            <p>x: {this.state.x}</p>
+            <p>y: {this.state.y}</p>
+            <p>yaw: {this.state.yaw}</p>
+          </Col>
+          <Col>
+            <p>linear velocity: {this.state.linear_vel}</p>
+            <p>angular velocity: {this.state.angular_vel}</p>
+          </Col>
+        </Row>
       </div>
     );
   }

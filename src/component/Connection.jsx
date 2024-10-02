@@ -54,7 +54,7 @@ class Connection extends Component {
 
     return (
       <div>
-        <span>Ros Bridge Status: </span>
+        <span>Status: </span>
         <span style={statusStyle}>
           {this.state.connected ? "Connected" : "Closed"}
         </span>

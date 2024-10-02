@@ -1,25 +1,23 @@
 import React, { Component } from "react";
-import * as Three from "three";
 import Config from "./config/config";
+import { Joystick } from "react-joystick-component";
+import Joy_img from "./images/joy.jpg";
 
 class Teleoperation extends Component {
-  //   constructor() {}
+  constructor() {
+    super();
+
+    this.handleMove = this.handleMove.bind(this);
+    this.handleStop = this.handleStop.bind(this);
+  }
 
   state = {
     connected: false,
     ros: null,
-    info_msg: "",
-    x: 0,
-    y: 0,
-    yaw: 0,
-    linear_vel: 0,
-    angular_vel: 0,
   };
 
   componentDidMount() {
     this.init_connection();
-    this.getRobotInfo();
-    this.getRobotState();
   }
 
   init_connection() {
@@ -52,55 +50,63 @@ class Teleoperation extends Component {
     }
   }
 
-  getRobotInfo = () => {
-    var info_sub = new window.ROSLIB.Topic({
+  handleMove(event) {
+    var vel_pub = new window.ROSLIB.Topic({
       ros: this.state.ros,
-      name: Config.INFO_TOPIC,
-      messageType: "std_msgs/String",
+      name: Config.VEL_TOPIC,
+      messageType: "geometry_msgs/Twist",
     });
 
-    info_sub.subscribe((message) => {
-      this.setState({ info_msg: message.data });
+    var twist_msg = new window.ROSLIB.Message({
+      linear: {
+        x: event.y * 0.5,
+        y: 0.0,
+        z: 0.0,
+      },
+      angular: {
+        x: 0.0,
+        y: 0.0,
+        z: -event.x * 0.5,
+      },
     });
-  };
 
-  getEulerFromQuat(quat) {
-    var q = new Three.Quaternion(quat.x, quat.y, quat.z, quat.w);
-
-    var rpy = new Three.Euler().setFromQuaternion(q);
-
-    //   คืนค่า yaw
-    return rpy["_z"] * (180 / 3.14159);
+    vel_pub.publish(twist_msg);
   }
 
-  getRobotState = () => {
-    var pose_sub = new window.ROSLIB.Topic({
+  handleStop(event) {
+    var vel_pub = new window.ROSLIB.Topic({
       ros: this.state.ros,
-      name: Config.ODOM_TOPIC,
-      messageType: "nav_msgs/Odometry",
+      name: Config.VEL_TOPIC,
+      messageType: "geometry_msgs/Twist",
     });
 
-    pose_sub.subscribe((message) => {
-      this.setState({ x: message.pose.pose.position.x.toFixed(2) });
-      this.setState({ y: message.pose.pose.position.y.toFixed(2) });
-      this.setState({
-        yaw: this.getEulerFromQuat(message.pose.pose.orientation).toFixed(2),
-      });
-      this.setState({ linear_vel: message.twist.twist.linear.x.toFixed(2) });
-      this.setState({ angular_vel: message.twist.twist.angular.z.toFixed(2) });
+    var twist_msg = new window.ROSLIB.Message({
+      linear: {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+      },
+      angular: {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+      },
     });
-  };
 
+    vel_pub.publish(twist_msg);
+  }
   render() {
     return (
       <div>
-        <p>{this.state.info_msg}</p>
-        <h6>Odometry</h6>
-        <p>x: {this.state.x}</p>
-        <p>y: {this.state.y}</p>
-        <p>yaw: {this.state.yaw}</p>
-        <p>linear velocity: {this.state.linear_vel}</p>
-        <p>angular velocity: {this.state.angular_vel}</p>
+        <Joystick
+          size={200}
+          sticky={false}
+          baseColor="black"
+          stickColor="white"
+          move={this.handleMove}
+          stop={this.handleStop}
+          stickImage={Joy_img}
+        />
       </div>
     );
   }
