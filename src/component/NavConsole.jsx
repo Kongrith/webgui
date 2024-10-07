@@ -19,6 +19,7 @@ class NavConsole extends Component {
   componentDidMount() {
     this.init_connection();
     this.getNavPoint();
+    this.sendNavPoint();
   }
 
   init_connection() {
@@ -77,6 +78,36 @@ class NavConsole extends Component {
     });
   }
 
+  sendNavPoint = () => {
+    var navp2p_pub = new window.ROSLIB.Topic({
+      ros: this.state.ros,
+      name: Config.NAVP2P_TOPIC,
+      messageType: "geometry_msgs/Vector3",
+    });
+
+    var navp2p_msg = new window.ROSLIB.Message({
+      x: parseFloat(this.state.x),
+      y: parseFloat(this.state.y),
+      z: parseFloat(this.state.yaw),
+    });
+
+    navp2p_pub.publish(navp2p_msg);
+  };
+
+  gotoGoal = (event) => {
+    var navgo_pub = new window.ROSLIB.Topic({
+      ros: this.state.ros,
+      name: Config.NAVGO_TOPIC,
+      messageType: "std_msgs/Int8",
+    });
+
+    var navgo_msg = new window.ROSLIB.Message({
+      data: 1,
+	});
+
+	  navgo_pub.publish(navgo_msg);
+  };
+
   render() {
     return (
       <div>
@@ -110,32 +141,45 @@ class NavConsole extends Component {
             />
           </Col>
           <Col>
-            <button type="button" className="btn btn-info btn-lg">SET</button>
+            <button
+              onClick={() => this.sendNavPoint()}
+              type="button"
+              className="btn btn-info btn-lg"
+            >
+              SET TARGET
+            </button>
           </Col>
         </Row>
 
         <Row>
-          <Col>
-            <button type="button" className="btn btn-outline-info">
-              <h6>Point A</h6>
-            </button>
+          <Col sm={4}>
+            <Row>
+              <button type="button" className="btn btn-outline-info">
+                <h6>Point A</h6>
+              </button>
+            </Row>
+            <Row>
+              <button type="button" className="btn btn-success">
+                <h6>Point B</h6>
+              </button>
+            </Row>
           </Col>
-          <Col>
-            <button type="button" className="btn btn-success">
-              <h6>Go to Goal</h6>
-            </button>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <button type="button" className="btn btn-outline-info">
-              <h6>Point B</h6>
-            </button>
-          </Col>
-          <Col>
-            <button type="button" className="btn btn-success">
-              <h6>Home</h6>
-            </button>
+
+          <Col sm={4}>
+            <Row>
+              <button
+                onClick={this.gotoGoal}
+                type="button"
+                className="btn btn-outline-info"
+              >
+                <h6>Go to Goal</h6>
+              </button>
+            </Row>
+            <Row>
+              <button type="button" className="btn btn-success">
+                <h6>Home</h6>
+              </button>
+            </Row>
           </Col>
         </Row>
       </div>
