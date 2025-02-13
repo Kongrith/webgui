@@ -18,7 +18,10 @@ class RobotState extends Component {
     viewer: null,
     map_x: 0.0,
     map_y: 0.0,
-    map_yaw: 0.0,
+	map_yaw: 0.0,
+	goal_x: 0.0,
+	goal_y: 0.0,
+	goal_yaw: 0.0,
   };
 
   constructor() {
@@ -62,7 +65,10 @@ class RobotState extends Component {
     });
 
     // x, y, length, direction, color
-    viewer.addRobot(0, 0, 0.5, 0.5, "#cc0066");
+	viewer.addRobot(0, 0, 0.2, 0.5, "#cc0066");
+
+	// x, y, length, color
+	viewer.addCurrentGoal(0, 0, 0.1, "#138d75")
   }
 
   sendMapClickPosition(x, y) {
@@ -89,6 +95,26 @@ class RobotState extends Component {
       var clickPose = this.state.viewer.getMapClickPosition();
       this.sendMapClickPosition(clickPose.x, clickPose.y);
     }
+  }
+	update_goal_position(x, y) {
+		if (this.state.viewer) {
+			this.state.viewer.updateGoalPosition(0, x, y)
+		}
+	}
+
+	getNavGoal() {
+		var goal_subscriber = new window.ROSLIB.Topic({
+			ros: this.state.ros,
+			name: Config.NAVP2P_TOPIC,	//
+			messageType: "geometry_msgs/Vector3",
+		})
+
+		goal_subscriber.subscribe((message) => {
+			this.setState({ goal_x: message.x.toFixed(2) })
+			this.setState({ goal_y: message.y.toFixed(2) })
+			this.setState({ goal_yaw: message.z.toFixed(2) });
+			this.update_goal_position(message.x, message.y, message.z )
+		})
   }
 
   init_connection() {
@@ -162,6 +188,8 @@ class RobotState extends Component {
           2
         ),
       });
+
+		this.getNavGoal()
 
       this.updateRobotPosition(
         this.state.map_x,

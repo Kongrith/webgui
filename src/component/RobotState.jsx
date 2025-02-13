@@ -88,14 +88,15 @@ class RobotState extends Component {
         yaw: this.getEulerFromQuat(message.pose.pose.orientation).toFixed(2),
       });
       this.setState({ linear_vel: message.twist.twist.linear.x.toFixed(2) });
-      this.setState({ angular_vel: message.twist.twist.angular.z.toFixed(2) });
+      this.setState({ angular_vel: message.twist.twist.angular.z.toFixed(4) });
     });
   };
 
   render() {
     return (
       <div>
-        <p>{this.state.info_msg}</p>
+			<p>{this.state.info_msg}</p>
+
         <h6>Odometry</h6>
         <Row>
           <Col>

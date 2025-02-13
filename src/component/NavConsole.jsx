@@ -112,7 +112,7 @@ class NavConsole extends Component {
     return (
       <div>
         <Row>
-          <h4>Navigation Console</h4>
+          <h4>Current Position</h4>
         </Row>
         <Row>
           <Col sm={2}>
