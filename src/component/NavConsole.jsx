@@ -108,6 +108,20 @@ class NavConsole extends Component {
 	  navgo_pub.publish(navgo_msg);
   };
 
+	setNamedTarget = (point_name) => {
+		var navnamed_pub = new window.ROSLIB.Topic({
+			ros: this.state.ros,
+			name: Config.NAVNAME_TOPIC,
+			messageType: "std_msgs/String"
+		})
+
+		var navnamed_msg = new window.ROSLIB.Message({
+			data: point_name,
+		})
+
+		navnamed_pub.publish(navnamed_msg)
+	}
+
   render() {
     return (
       <div>
@@ -154,12 +168,12 @@ class NavConsole extends Component {
         <Row>
           <Col sm={4}>
             <Row>
-              <button type="button" className="btn btn-outline-info">
+              <button type="button" className="btn btn-outline-info" onClick={(e) => this.setNamedTarget("A")}>
                 <h6>Point A</h6>
               </button>
             </Row>
             <Row>
-              <button type="button" className="btn btn-success">
+						<button type="button" className="btn btn-success" onClick={(e) => this.setNamedTarget("B")}>
                 <h6>Point B</h6>
               </button>
             </Row>
@@ -176,7 +190,7 @@ class NavConsole extends Component {
               </button>
             </Row>
             <Row>
-              <button type="button" className="btn btn-success">
+              <button type="button" className="btn btn-success" onClick={(e) => this.setNamedTarget("home")}>
                 <h6>Home</h6>
               </button>
             </Row>
