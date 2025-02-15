@@ -11,7 +11,8 @@ const Config =
 	MAPCLICK_TOPIC: "map/clicked_point",
 	NAVP2P_TOPIC: "nav_p2p/setpoint",
 	NAVGO_TOPIC: "nav_p2p/go",
-	NAVNAME_TOPIC: "nav_p2p/named_target"
+	NAVNAME_TOPIC: "nav_p2p/named_target",
+	RGB_TOPIC: "/rgb/compressed"
 }
 
 export default Config
